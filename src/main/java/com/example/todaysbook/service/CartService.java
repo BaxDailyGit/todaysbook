@@ -1,5 +1,6 @@
 package com.example.todaysbook.service;
 
+import com.example.todaysbook.domain.dto.BookDto;
 import com.example.todaysbook.domain.dto.CartRequestDto;
 import com.example.todaysbook.domain.entity.Book;
 import com.example.todaysbook.domain.entity.Cart;
@@ -117,6 +118,17 @@ public class CartService {
     // 총 적립 마일리지 계산 메소드 (임시)
     public int calculateTotalMileage(List<CartBook> cartBooks) {
         return 0; // 일단은 임시로 0으로 설정
+    }
+
+
+
+    private CartRequestDto entityToCartDto(Book book){
+        return CartRequestDto.builder()
+                .bookId(book.getId())
+                .title(book.getTitle())
+                .author(book.getAuthor())
+                .price(book.getPrice())
+                .build();
     }
 
 

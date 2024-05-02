@@ -3,11 +3,17 @@ package com.example.todaysbook.controller;
 import com.example.todaysbook.domain.entity.CartBook;
 import com.example.todaysbook.service.CartService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -150,13 +156,13 @@ public class ViewController {
 //
 //        return "cart/list";
 //    }
-
     @GetMapping("/payment/info")
-    public String paymentInfo(Model model) {
+    public String paymentInfo( Model model) {
         // userId가 1인 사용자의 장바구니 목록 조회
         List<CartBook> cartBooks = cartService.findCartBooksByUserId(1L);
         int totalPrice = cartService.calculateTotalPrice(cartBooks); // 총 상품 가격을 계산
         model.addAttribute("totalPrice", totalPrice); // 모델에 totalPrice를 추가하여 뷰로 전달
+        model.addAttribute("cartBooks", cartBooks); // 모델에 totalPrice를 추가하여 뷰로 전달
 
         return "payment/info";
     }

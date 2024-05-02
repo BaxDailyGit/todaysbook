@@ -77,10 +77,11 @@
                     </div>
                     <div class="count-info">
                         <p class="count-label" th:text="'수량'"></p>
-                        <input class="count-input" type="text" value="1">
+                        <input class="count-input"  type="number" value="1" min="1">
                     </div>
+
                     <div class="button-group">
-                        <button class="cart-button" th:text="'장바구니'"></button>
+                        <button class="cart-button" th:data-id="${bookDetailDto.bookDetail.id}" onclick="addCart(this)" th:text="'장바구니'"></button>
                         <button class="purchase-button" th:text="'구매하기'"></button>
                     </div>
                 </div>
