@@ -101,9 +101,10 @@ public class PaymentController {
         model.addAttribute("bookDtoList", bookDtoList);
         model.addAttribute("usedMileage", addressAndMileageInfo.getUsedMileage());
         model.addAttribute("totalPrice", totalPrice);
-        long deliveryCharge = addressAndMileageInfo.getTotalPrice() >= 20000 ? 0 : 3000;
+        long deliveryCharge = totalPrice >= 20000 ? 0 : 3000;
+
         model.addAttribute("mileagedTotalPrice", totalPrice - addressAndMileageInfo.getUsedMileage() + deliveryCharge);
-        model.addAttribute("deliveryCharge", addressAndMileageInfo.getTotalPrice() >= 20000 ? "0원" : "3,000원");
+        model.addAttribute("deliveryCharge", deliveryCharge == 0 ? "0원" : "3,000원");
         model.addAttribute("etc", "[" + addressAndMileageInfo.getUser() + "]님을 받는 분으로 하고, (" + addressAndMileageInfo.getPostcode() +
                 ")[" + addressAndMileageInfo.getAddress() + " / " + addressAndMileageInfo.getDetailAddress() + "]을(를) 배송지로 합니다");
         return "payment/success";

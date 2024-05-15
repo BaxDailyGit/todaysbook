@@ -39,7 +39,7 @@
                     <p class="mileage" th:text="${usedMileage == 0 ? '0M' : #numbers.formatInteger(usedMileage, '3', 'COMMA') + 'M'}"></p>
                     <p class="operand">+</p>
                     <p class="delivery">배송료</p>
-                    <p class="delivery" th:text="${deliveryCharge}">3,000원</p>
+                    <p class="delivery" th:text="${deliveryCharge}"></p>
                 </li>
                 <li class="total-price-div">
                     <p>합계</p>
