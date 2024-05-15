@@ -22,7 +22,7 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
             "WHEN d.status = '배송중' THEN 2 " +
             "WHEN d.status = '배송완료' THEN 3 " +
             "ELSE 4 " +
-            "END ASC")
+            "END ASC , o.id desc ")
     Page<DeliveryDto> findAllDelivery(Pageable pageable);
 
     @Query("select new com.example.todaysbook.domain.dto.DeliveryDto(o.id, d.id, o.userId, d.status) " +
