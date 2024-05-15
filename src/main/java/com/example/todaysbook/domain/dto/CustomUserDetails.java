@@ -24,6 +24,11 @@ public class CustomUserDetails implements UserDetails {
         return authorities;
     }
 
+    public String getRole() {
+
+        return user.getRole();
+    }
+
     public long getUserId() {
 
         return user.getId();

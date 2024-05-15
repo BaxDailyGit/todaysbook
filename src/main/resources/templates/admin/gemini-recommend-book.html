@@ -3,19 +3,12 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
-
 <th:block layout:fragment="head">
     <title>ai 추천 책 관리</title>
     <link th:href="@{/css/admin/common.css}" rel="stylesheet"/>
     <link th:href="@{/css/admin/gemini-recommend-book.css}" rel="stylesheet"/>
-
-
 </th:block>
-
 <div th:replace="~{fragments/header.html}"></div>
-
-
-
 <main th:fragment="content">
     <aside th:replace="~{fragments/sidebar-admin.html}"></aside>
     <div class="mypage-wrap">
@@ -24,20 +17,28 @@
         <div class="gemini-recommend-book-container">
             <div class="table-area">
                 <table>
+                    <thead>
                     <tr>
                         <th>Title</th>
                         <th>Autor</th>
                         <th>Publisher</th>
                         <th>Price</th>
                         <th>Stock</th>
+                        <th>삭제</th>
                     </tr>
-                    <tr th:each="book : ${todayRecommendBooks}">
-                        <td th:text="${book.title}"></td>
-                        <td th:text="${book.author}"></td>
-                        <td th:text="${book.publisher}"></td>
-                        <td th:text="${book.price}"></td>
-                        <td th:text="${book.stock}"></td>
+                    </thead>
+                    <tbody>
+                    <tr th:each="recommend : ${todayRecommendBooks}">
+                        <td th:text="${recommend.bookDto.title}"></td>
+                        <td th:text="${recommend.bookDto.author}"></td>
+                        <td th:text="${recommend.bookDto.publisher}"></td>
+                        <td th:text="${recommend.bookDto.price}"></td>
+                        <td th:text="${recommend.bookDto.stock}"></td>
+                        <td>
+                            <button type="button" class="delete-btn" th:data-id="${recommend.id}" onclick="deleteBook(this)"><img th:src="@{/images/delete.png}"/></button>
+                        </td>
                     </tr>
+                    </tbody>
                 </table>
             </div>
             <div class="setting-area">
@@ -50,7 +51,6 @@
                     <input type="range" id="quantityRange" class="set-range" min="1" max="30"/>
                     <span id="quantityValue">15</span>
                 </div>
-
                 <p class="h-set">Temperature</p>
                 <p class="p-set">temperature가 오르면 독창성은 올라가고
                     일관성과 정확성이 낮아질 수 있습니다.</p>
@@ -58,25 +58,18 @@
                     <input type="range" id="temperatureRange" class="set-range" min="0" max="1" step="0.1"/>
                     <span id="temperatureValue">0.5</span>
                 </div>
-
-
-                <button type="button" class="gemini-recommend-book-btn">
+                <button type="button" class="gemini-recommend-book-btn" onclick="recommendBooks()">
                     <img class="gemini-recommend-book-btn-img" th:src="@{/images/gemini-api-call-btn.png}"/>
                 </button>
-
             </div>
         </div>
     </div>
-
-
-
-
-
-
+    <div id="loading-modal" class="modal">
+        <div class="modal-content">
+            <p>생성중...</p>
+        </div>
+    </div>
 </main>
-
-
-
 <div th:replace="~{fragments/footer.html}"></div>
 <script th:src="@{/js/admin/geminiRecommendBook/gemini-recommennd-book.js}"></script>
 </html>

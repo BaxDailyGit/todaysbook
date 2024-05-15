@@ -55,7 +55,7 @@
     <ul>
         <li>
             <div class="dropdown" sec:authorize="hasAnyRole('ROLE_BRONZE', 'ROLE_SILVER', 'ROLE_GOLD', 'ROLE_DIAMOND')">
-                <p th:text="${#authentication.principal.nickname} + '님 안녕하세요'"></p>
+                <p th:text="${nickname} + '님 안녕하세요'"></p>
                 <ul class="dropdown-options">
                     <li>
                         <a th:href="@{/mypage/orderlist}">마이페이지</a>

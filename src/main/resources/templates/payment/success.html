@@ -36,7 +36,7 @@
                     <p class="total-price" th:text="${#numbers.formatInteger(totalPrice, 3, 'COMMA') + '원'}">66,000원</p>
                     <p class="operand">-</p>
                     <p class="mileage">사용 마일리지</p>
-                    <p class="mileage" th:text="${#numbers.formatInteger(usedMileage, 3, 'COMMA') + '원'}">0M</p>
+                    <p class="mileage" th:text="${usedMileage == 0 ? '0M' : #numbers.formatInteger(usedMileage, '3', 'COMMA') + 'M'}"></p>
                     <p class="operand">+</p>
                     <p class="delivery">배송료</p>
                     <p class="delivery" th:text="${deliveryCharge}">3,000원</p>
@@ -55,32 +55,7 @@
         </section>
     </div>
 </main>
-<!--<body>-->
-<!--    <div class="p-grid typography&#45;&#45;p" style="margin-top: 50px">-->
-<!--      <div class="p-grid-col text&#45;&#45;left"><b>결제금액</b></div>-->
-<!--      <div class="p-grid-col text&#45;&#45;right" id="amount"></div>-->
-<!--    </div>-->
-<!--    <div class="p-grid typography&#45;&#45;p" style="margin-top: 10px">-->
-<!--      <div class="p-grid-col text&#45;&#45;left"><b>주문번호</b></div>-->
-<!--      <div class="p-grid-col text&#45;&#45;right" id="orderId"></div>-->
-<!--    </div>-->
-<!--    <div class="p-grid typography&#45;&#45;p" style="margin-top: 10px">-->
-<!--      <div class="p-grid-col text&#45;&#45;left"><b>paymentKey</b></div>-->
-<!--      <div class="p-grid-col text&#45;&#45;right" id="paymentKey" style="white-space: initial; width: 250px"></div>-->
-<!--    </div>-->
-<!--    <div class="p-grid" style="margin-top: 30px">-->
-<!--      <button class="button p-grid-col5" onclick="location.href='https://docs.tosspayments.com/guides/payment/integration';">연동 문서</button>-->
-<!--      <button class="button p-grid-col5" onclick="location.href='https://discord.gg/A4fRFXQhRu';" style="background-color: #e8f3ff; color: #1b64da">실시간 문의</button>-->
-<!--    </div>-->
-<!--  </div>-->
-
-<!--  <div class="box_section" style="width: 600px; text-align: left">-->
-<!--    <b>Response Data :</b>-->
-<!--    <div id="response" style="white-space: initial"></div>-->
-<!--  </div>-->
-
 <script>
-
     function padZero(num) {
         return num.toString().padStart(2, '0');
     }
@@ -146,11 +121,9 @@
             var formattedDate = `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(date.getDate())} ${padZero(date.getHours())}시 ${padZero(date.getMinutes())}분`;
             document.querySelector('.description').innerHTML = `<pre>입금 가상 계좌 : ${data.virtualAccount.accountNumber}\n입금 기한 : ${formattedDate} 까지</pre>`;
         }
-
         document.querySelector('.title').innerHTML = payStatus;
 
     });
-
 </script>
 </body>
 </html>

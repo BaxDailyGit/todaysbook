@@ -8,10 +8,12 @@ import com.example.todaysbook.domain.dto.MyReview;
 import com.example.todaysbook.domain.dto.OrderDetailDTO;
 import com.example.todaysbook.domain.dto.RecommendListDetailDto;
 import com.example.todaysbook.domain.entity.Orders;
+import com.example.todaysbook.domain.entity.User;
 import com.example.todaysbook.service.FavoriteBookService;
 import com.example.todaysbook.service.OrderService;
 import com.example.todaysbook.service.RecommendListService;
 import com.example.todaysbook.service.ReviewService;
+import com.example.todaysbook.service.UserService;
 import com.example.todaysbook.util.Pagination;
 import com.example.todaysbook.util.UserChecker;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,25 @@ public class MypageController {
     private final ReviewService reviewService;
     private final OrderService orderService;
     private final FavoriteBookService favoriteBookService;
+    private final UserService userService;
+
+
+    @GetMapping("/updateinfo")
+    public String mypageUpdateInfo(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+
+        long userId=UserChecker.getUserId(userDetails);
+        User user = userService.getUserByUserId(userId);
+
+        model.addAttribute("user", user);
+
+        return "user/mypage/update-info";
+    }
+
+    @GetMapping("/updatepw")
+    public String mypageUpdatePw(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+
+        return "user/mypage/update-password";
+    }
 
     @GetMapping("/my_recommend_list")
     public String myRecommendList(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {

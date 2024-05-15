@@ -1,7 +1,6 @@
 package com.example.todaysbook.domain.dto;
 
 import lombok.*;
-
 import java.util.List;
 
 @Data

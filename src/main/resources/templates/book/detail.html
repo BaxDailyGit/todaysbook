@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="head">
@@ -12,6 +13,7 @@
 <main th:fragment="content">
     <div class="detail-wrap">
         <section class="book-detail">
+            <input type="hidden" id="role" th:value="${role}">
             <div class="book-detail-header">
                 <pre class="title" th:text="${bookDetailDto.bookDetail.title}"></pre>
                 <input type="hidden" class="book-id" th:value="${bookDetailDto.bookDetail.id}">
@@ -97,7 +99,6 @@
                         <p th:text="${bookDetailDto.bookDetail.stock == 0} ? '일시 품절'" style="color: #D54DFE; font-size: 30px;"></p>
                         <p th:text="${bookDetailDto.bookDetail.stock == -1} ? '입고 예정'" style="color: #D54DFE; font-size: 30px;"></p>
                     </div>
-
                 </div>
             </div>
             <div class="book-description">

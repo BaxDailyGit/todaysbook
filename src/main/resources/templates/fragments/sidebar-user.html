@@ -9,7 +9,7 @@
         <a class="title" th:href="@{/mypage/orderlist}">마이 페이지</a>
         <div class="mileage-info">
             <a class="label" th:href="@{/mypage/mileage_history}">보유 마일리지</a>
-            <p th:text="${#authentication.principal.mileage} + 'M'"></p>
+            <p th:text="${mileage} + 'M'"></p>
         </div>
         <ul class="aside-body">
             <li th:each="label : ${#strings.arraySplit('장바구니,주문 내역,내가 쓴 리뷰,내가 찜한 책,추천 리스트,정보 수정',',')}">

@@ -3,12 +3,10 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
-
 <th:block layout:fragment="head">
     <title>오늘의 책</title>
     <link th:href="@{/css/index.css}" href="../static/css/index.css" rel="stylesheet"/>
     <link th:href="@{/css/list/list.css}" href="../static/css/index.css" rel="stylesheet"/>
-
 </th:block>
 <div th:replace="~{fragments/header.html}"></div>
 <main th:fragment="content">
@@ -78,16 +76,16 @@
                     <button th:class="${todayRecommendBooks.size() > 5 ? 'prev-btn' : 'prev-btn-hidden'}" th:onclick="prevSlide('today', this)">&lt;</button>
                     <div class="slider-container">
                         <ul class="recommend-list">
-                            <li class="book-item" th:each="book : ${todayRecommendBooks}" th:value="${book.id}">
+                            <li class="book-item" th:each="book : ${todayRecommendBooks}" th:value="${book.bookDto.id}">
                                 <figure class="book-info">
-                                    <a th:href="@{'/book/detail/' + ${book.id}}">
-                                        <img th:src="${book.image}" th:alt="${book.title}">
+                                    <a th:href="@{'/book/detail/' + ${book.bookDto.id}}">
+                                        <img th:src="${book.bookDto.image}" th:alt="${book.bookDto.title}">
                                         <figcaption class="overlay">
-                                            <p class="book-title" th:if="${book.title.length() > 25}" th:text="${#strings.substring(book.title, 0, 25)} + '...'"></p>
-                                            <p class="book-title" th:unless="${book.title.length() > 25}" th:text="${book.title}"></p>
-                                            <p class="author" th:if="${book.author.length() > 25}" th:text="${#strings.substring(book.author, 0, 25)} + '...'"></p>
-                                            <p class="author" th:unless="${book.author.length() > 25}" th:text="${book.author}"></p>
-                                            <p class="price" th:text="${book.price}"></p>
+                                            <p class="book-title" th:if="${book.bookDto.title.length() > 25}" th:text="${#strings.substring(book.bookDto.title, 0, 25)} + '...'"></p>
+                                            <p class="book-title" th:unless="${book.bookDto.title.length() > 25}" th:text="${book.bookDto.title}"></p>
+                                            <p class="author" th:if="${book.bookDto.author.length() > 25}" th:text="${#strings.substring(book.bookDto.author, 0, 25)} + '...'"></p>
+                                            <p class="author" th:unless="${book.bookDto.author.length() > 25}" th:text="${book.bookDto.author}"></p>
+                                            <p class="price" th:text="${book.bookDto.price}"></p>
                                         </figcaption>
                                     </a>
                                 </figure>

@@ -3,29 +3,24 @@ package com.example.todaysbook.service;
 import com.example.todaysbook.domain.dto.BookDto;
 import com.example.todaysbook.domain.dto.GeminiRecommendApiRequest;
 import com.example.todaysbook.domain.dto.GeminiRecommendApiResponse;
+import com.example.todaysbook.domain.dto.GeminiRecommendBookDto;
 import com.example.todaysbook.domain.entity.Book;
 import com.example.todaysbook.domain.entity.GeminiRecommendBook;
 import com.example.todaysbook.repository.BookRepository;
 import com.example.todaysbook.repository.GeminiRecommendBookRepository;
 import com.example.todaysbook.util.AladinApi;
+import com.example.todaysbook.constant.Constant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -52,33 +47,54 @@ public class GeminiRecommendBookService {
     @Value("${gemini.generationConfig.max_output_tokens}")
     private int maxOutputTokens;
 
-    @Value("${gemini.generationConfig.temperature}")
-    private double temperature;
-
     private final BookRepository bookRepository;
     private final GeminiRecommendBookRepository geminiRecommendBookRepository;
-
     private final AladinApi aladinApi;
-    private final AdminServiceImpl adminService;
 
+    // 자동으로 책 추천
+    public ResponseEntity<String> callScheduledGeminiApi() {
+        String prompt = String.format(Constant.DEFAULT_PROMPT, Constant.DEFAULT_NATION, Constant.DEFAULT_QUANTITY);
+        return callGeminiApi(prompt, Constant.DEFAULT_QUANTITY, Constant.DEFAULT_TEMPERATURE);
+    }
 
-    // 예외처리하기 (설정한 최대 토큰 제한을 넘어가면 null이 넘어옴. 보통 추천 책 1개당 토큰 10개)(후순위)
-    public String getContents(String prompt) throws UnsupportedEncodingException {
+    // 수동으로 책 추천
+    public void recommendAndSaveBooks(Integer quantity, Double temperature) throws UnsupportedEncodingException {
+        quantity = quantity != null ? quantity : Constant.DEFAULT_QUANTITY;
+        temperature = temperature != null ? temperature : Constant.DEFAULT_TEMPERATURE;
+
+        String prompt = String.format(Constant.DEFAULT_PROMPT, Constant.DEFAULT_NATION, quantity);
+        callGeminiApi(prompt, quantity, temperature);
+    }
+
+    // Gemini API 호출
+    private ResponseEntity<String> callGeminiApi(String prompt, int quantity, double temperature) {
+        try {
+            String message = getContents(prompt, temperature);
+            saveGeminiRecommendBook(message);
+            return ResponseEntity.ok(message);
+        } catch (HttpClientErrorException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            return ResponseEntity.status(500).body("Internal Server Error");
+        }
+    }
+
+    // Gemini API 응답
+    private String getContents(String prompt, double temperature) throws UnsupportedEncodingException {
         String requestUrl = apiUrl + "?key=" + geminiApiKey;
         GeminiRecommendApiRequest request = new GeminiRecommendApiRequest(prompt, candidateCount, maxOutputTokens, temperature);
         GeminiRecommendApiResponse response = restTemplate.postForObject(requestUrl, request, GeminiRecommendApiResponse.class);
-        String message = response.getCandidates().get(0).getContent().getParts().get(0).getText().toString();
-        saveGeminiRecommendBook(message);
-        return message;
+        return response.getCandidates().get(0).getContent().getParts().get(0).getText();
     }
 
+    // 추천된 책 DB에 저장 process
     public void saveGeminiRecommendBook(String message) throws UnsupportedEncodingException {
         // 책 제목 추출
         List<String> bookTitles = extractBookTitles(message);
 
-
         log.info("-----------------책 제목 DB 저장 시작-----------------");
         for (String bookTitle : bookTitles) {
+
             // 책 제목으로 DB 검색
             Optional<Book> bookOptional = bookRepository.findFirstByTitle(bookTitle);
             long bookId;
@@ -121,6 +137,7 @@ public class GeminiRecommendBookService {
         log.info("-----------------책 제목 DB 저장 완료-----------------\n");
     }
 
+    // GeminiRecommendBook 저장
     private void saveGeminiRecommendBookEntity(long bookId) {
         GeminiRecommendBook geminiRecommendBook = GeminiRecommendBook.builder()
                 .bookId(bookId)
@@ -130,7 +147,7 @@ public class GeminiRecommendBookService {
         log.info("bookId(" + bookId + ") GeminiRecommendBook에 저장 완료\n");
     }
 
-
+    // 메시지에서 책 제목 추출
     private List<String> extractBookTitles(String message) {
         log.info("---------------책 제목 추출 시작---------------");
         return Arrays.stream(message.split("\n"))
@@ -139,33 +156,46 @@ public class GeminiRecommendBookService {
                 .collect(Collectors.toList());
     }
 
-
-    // GeminiRecommendBook 목록에서 date가 오늘에 해당하는 booid를 이용해 해당 book을 반환하는 메소드
-    public List<BookDto> getTodayRecommendBooks() {
+    // 오늘 추천된 책 목록 반한하기
+    public List<GeminiRecommendBookDto> getTodayRecommendBooks() {
         LocalDate today = LocalDate.now();
 
-        // 오늘 날짜에 해당하는 GeminiRecommendBook 목록 가져오고 bookId 중복 제거 후 10개만 가져오기
         List<GeminiRecommendBook> todayRecommendBooks = geminiRecommendBookRepository.findByDateBetween(
                         today.atStartOfDay(), today.atTime(23, 59, 59))
                 .stream()
                 .distinct()
-                .limit(10)
                 .toList();
 
+        return todayRecommendBooks.stream()
+                .map(recommend -> {
+                    Book book = bookRepository.findById(recommend.getBookId())
+                            .orElseThrow(() -> new IllegalStateException("Book not found with id: " + recommend.getBookId()));
+                    BookDto bookDto = new BookDto(book.getId(), book.getTitle(), book.getAuthor(), book.getPrice(), book.getImagePath(), book.getPublisher(), book.getPublishDate(), book.getStock(), book.getIsbn(), book.getDescription(), book.getCategoryId());
+                    return new GeminiRecommendBookDto(recommend.getId(), bookDto);
+                })
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingLong(recommend -> recommend.getBookDto().getId()))),
+                        ArrayList::new));
+    }
 
-        // 오늘 날짜에 해당하는 bookId 목록 가져오기
-        List<Book> books = todayRecommendBooks.stream()
-                .map(GeminiRecommendBook::getBookId)
-                .distinct()
-                .map(bookRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .limit(10)
-                .toList();
+    @Transactional
+    public boolean deleteBook(Long id) {
+        Optional<GeminiRecommendBook> bookOptional = geminiRecommendBookRepository.findById(id);
+        if (bookOptional.isPresent()) {
+            GeminiRecommendBook geminiBook = bookOptional.get();
+            Long bookId = geminiBook.getBookId();
 
-        // book 목록을 BookDto 목록으로 변환
-        return books.stream()
-                .map(book -> new BookDto(book.getId(), book.getTitle(), book.getAuthor(), book.getPrice(), book.getImagePath(), book.getPublisher(), book.getPublishDate(), book.getStock(), book.getIsbn(), book.getDescription(), book.getCategoryId()))
-                .collect(Collectors.toList());
+            Optional<Book> bookOptional2 = bookRepository.findById(bookId);
+            if (bookOptional2.isPresent()) {
+                Book book = bookOptional2.get();
+
+                // 같은 bookId를 가진 모든 GeminiRecommendBook 삭제
+                List<GeminiRecommendBook> booksToDelete = geminiRecommendBookRepository.findByBookId(bookId);
+                geminiRecommendBookRepository.deleteAll(booksToDelete);
+
+                return true;
+            }
+        }
+        return false;
     }
 }

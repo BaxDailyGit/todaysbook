@@ -49,7 +49,7 @@
                 </ul>
                 <ul class="cart-list-bottom">
                     <p th:text="'총 주문 금액 ' + ${#numbers.formatInteger(totalPrice, 3, 'COMMA') + '원'}"></p>
-                    <p id="totalMileage" th:text="'총 적립 마일리지 ' + ${#numbers.formatInteger(totalMileage, 3, 'COMMA') + 'M'}"></p>
+                    <p id="totalMileage" th:text="'총 적립 마일리지 ' + (${totalMileage == 0 ? '0M' : #numbers.formatInteger(totalMileage, '3', 'COMMA') + 'M'})"></p>
                     <p id="membershipLevel" th:text="'등급: ' + ${membershipLevel}" style="display: none;"></p>
                     <p>배송료 <span id="deliveryFee"></span></p>
                 </ul>

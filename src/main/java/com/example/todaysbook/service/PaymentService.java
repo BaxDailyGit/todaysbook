@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface PaymentService {
     void createOrder(long userId, List<PaymentBookInfoDto> bookDtoList, PaymentAddressAndMileageInfo addressAndMileageInfo);
-
     void subtractStock(List<PaymentBookInfoDto> books);
 }

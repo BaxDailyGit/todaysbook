@@ -2,7 +2,6 @@ package com.example.todaysbook.domain.dto;
 
 import lombok.*;
 import org.springframework.beans.factory.annotation.Value;
-
 import java.util.ArrayList;
 import java.util.List;
 

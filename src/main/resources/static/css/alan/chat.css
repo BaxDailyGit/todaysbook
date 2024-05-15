@@ -135,7 +135,6 @@ textarea {
 
 .submit {
     position: absolute;
-
     bottom: 10px;
     right: 10px;
     background-color: #555;
@@ -183,12 +182,9 @@ textarea {
     }
 }
 
-
-
 .chatting-read-area::-webkit-scrollbar {
     width: 5px;
 }
-
 
 .chatting-read-area::-webkit-scrollbar-track {
     background: black;

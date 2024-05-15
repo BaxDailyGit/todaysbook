@@ -33,7 +33,7 @@ public class MainController {
         List<RecommendListDetailWithBookMarkDto> randomUserRecommendList =
                 recommendListService.getRandomRecommendList(userId);
 
-        List<BookDto> todayRecommendBooks = geminiRecommendBookService.getTodayRecommendBooks();
+        List<GeminiRecommendBookDto> todayRecommendBooks = geminiRecommendBookService.getTodayRecommendBooks();
 
         List<RecommendBookDto> recommendBooksByFavoriteBooks =
                 recommendBookService.getRecommendBooksByFavoriteBooks(userId);

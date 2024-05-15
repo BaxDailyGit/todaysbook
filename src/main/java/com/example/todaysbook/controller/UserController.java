@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,59 +47,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    /*@PostMapping("/login")
-    public ResponseEntity<?> login(HttpServletRequest request, HttpServletResponse response,
-                                   @RequestBody LoginRequestDto loginRequestDto){
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginRequestDto.getEmail());
-
-        // 인증 객체 생성
-        Authentication authentication
-                = new UsernamePasswordAuthenticationToken(userDetails, loginRequestDto.getPassword(), new ArrayList<>());
-
-        if(!userDetails.isEnabled()) {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
-        try {
-            authenticationManager.authenticate(authentication);
-        } catch (AuthenticationException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        // SecurityContextHolder : Authentication을 감싸는 객체
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        HttpSession session = request.getSession();
-        session.setAttribute
-                (HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                        SecurityContextHolder.getContext());
-        Cookie cookie = new Cookie("JSESSIONID", session.getId());
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setDomain("localhost");
-        cookie.setMaxAge(30000 * 60);
-        response.addCookie(cookie);
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate(); // 세션 무효화
-        }
-
-        // 클라이언트에게 쿠키 삭제 요청
-        Cookie cookie = new Cookie("JSESSIONID", null);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setDomain("localhost");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-
-        System.out.println("logout success");
-        return ResponseEntity.ok().build();
-    }*/
 
     @PutMapping ("/update/nickname")
     public ResponseEntity<?> updateUserNickname(@RequestBody UserRequestDto request, @AuthenticationPrincipal CustomUserDetails userDetails, BindingResult result) {

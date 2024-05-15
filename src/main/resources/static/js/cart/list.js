@@ -1,7 +1,7 @@
 function deleteSelectedCartItems() {
     var unselectedItems = document.querySelectorAll('.cart-list-body input[type="checkbox"]:not(:checked)');
     var unselectedIds = [];
-    unselectedItems.forEach(function(item) {
+    unselectedItems.forEach(function (item) {
         unselectedIds.push(item.value);
     });
 
@@ -18,20 +18,20 @@ function deleteSelectedCartItems() {
             },
             body: JSON.stringify(unselectedIds) // JSON 형식으로 데이터 변환
         })
-            .then(function(response) {
+            .then(function (response) {
                 if (!response.ok) {
                     throw Error(response.statusText);
                 }
                 return response.json();
             })
-            .then(function(data) {
+            .then(function (data) {
                 if (data.success) {
                     window.location.reload();
                 } else {
                     alert('삭제 중 오류가 발생했습니다.');
                 }
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error('Error:', error);
                 alert('서버 오류가 발생했습니다.');
             });
@@ -58,6 +58,8 @@ function postSelectedCartItems() {
         const price = parseFloat(listItem.querySelector('.price').textContent.replace(',', '').replace('원', ''));
         const mileage = listItem.querySelector('.mileage').textContent.replace(',', '').replace('M', '');
 
+        checkStock(bookId, bookName, quantity);
+
         // 추출한 정보를 객체로 저장하여 배열에 추가합니다.
         selectedBooks.push({
             bookId: bookId,
@@ -67,6 +69,7 @@ function postSelectedCartItems() {
             price: price,
             mileage: mileage
         });
+
     });
 
     // 서버로 선택된 책 정보를 전송합니다. (여기서는 fetch를 사용하여 POST 요청으로 보냅니다.)
@@ -87,12 +90,48 @@ function postSelectedCartItems() {
         });
 }
 
+function checkStock(bookId, bookName, quantity) {
+
+    let url = '/cart/list';
+
+    fetch('/payment/stock/' + bookId)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('서버 응답 실패');
+            }
+            return response.json();
+        })
+        .then(data => {
+
+            let stock = data.stock;
+
+            if (stock == 0) {
+                alert(bookName+' 품절 상태 입니다');
+                location.href = url;
+            }
+            if (quantity == 0) {
+                alert('수량을 확인해 주세요');
+                location.href = url;
+            }
+            if (quantity > stock) {
+                alert(bookName+ '\n현재 남아 있는 재고는 ' + stock + '개 입니다.\n'
+                    + '책을 구매하시려면 ' + (quantity - stock) + '개 줄여 주세요');
+
+                location.href = url;
+            }
+
+        })
+        .catch(error => {
+            console.error("서버 요청 중 에러 발생:", error);
+        });
+}
+
 //총 금액 실시간 업데이트
 
 // 페이지 로딩 시 전체 상품 선택 및 총 주문 금액 초기화
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     var allCheckBox = document.querySelectorAll('.cart-list-body input[type="checkbox"]');
-    allCheckBox.forEach(function(item) {
+    allCheckBox.forEach(function (item) {
         item.checked = true; // 모든 체크박스 선택
     });
     updateTotalPrice();
@@ -107,7 +146,7 @@ function updateTotalPrice() {
     var totalPrice = 0;
 
     // 체크된 상품의 가격을 합산하여 총 주문 금액 계산
-    document.querySelectorAll('.cart-list-body input[type="checkbox"]:checked').forEach(function(item) {
+    document.querySelectorAll('.cart-list-body input[type="checkbox"]:checked').forEach(function (item) {
         var cartItem = item.parentElement.parentElement; // 각 상품 리스트 아이템
         var itemPrice = parseInt(cartItem.querySelector('.price').textContent.replace(/[,원]/g, '')); // 상품 가격
         totalPrice += itemPrice;
@@ -160,15 +199,12 @@ function updateTotalMileage(totalPrice) {
 }
 
 
-document.querySelectorAll('.cart-list-body input[type="checkbox"]').forEach(function(checkbox) {
-    checkbox.addEventListener('change', function() {
+document.querySelectorAll('.cart-list-body input[type="checkbox"]').forEach(function (checkbox) {
+    checkbox.addEventListener('change', function () {
         var totalPrice = updateTotalPrice(); // 총 주문 금액 업데이트 및 반환
         updateTotalMileage(totalPrice); // 총 마일리지 업데이트
     });
 });
-
-
-
 
 
 function deleteSelectedCartItemsIfNotChecked() {
@@ -185,8 +221,6 @@ function deleteSelectedCartItemsIfNotChecked() {
     // 모든 아이템이 선택되었을 경우에는 바로 주문 페이지로 이동
     location.href = '/payment/info';
 }
-
-
 
 
 ////수량 증가 감소

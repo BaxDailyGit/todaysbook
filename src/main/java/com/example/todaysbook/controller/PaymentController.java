@@ -3,6 +3,9 @@ package com.example.todaysbook.controller;
 import com.example.todaysbook.domain.dto.CustomUserDetails;
 import com.example.todaysbook.domain.dto.PaymentAddressAndMileageInfo;
 import com.example.todaysbook.domain.dto.PaymentBookInfoDto;
+import com.example.todaysbook.domain.dto.PaymentValidInfoDto;
+import com.example.todaysbook.domain.entity.Book;
+import com.example.todaysbook.repository.BookRepository;
 import com.example.todaysbook.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +30,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Controller
@@ -38,47 +42,15 @@ public class PaymentController {
     String widgetSecretKey;
 
     private final PaymentService paymentService;
+    private final BookRepository bookRepository;
 
-    public static int getTotalPrice(List<PaymentBookInfoDto> bookDtoList) {
+    private int getTotalPrice(List<PaymentBookInfoDto> bookDtoList) {
         int totalPrice = 0;
         for (PaymentBookInfoDto paymentBookInfoDto : bookDtoList) {
             totalPrice += paymentBookInfoDto.getPrice();
         }
         return totalPrice;
     }
-
-//    private static int getTotalMileage(List<PaymentBookInfoDto> bookDtoList) {
-//        int totalMileage = 0;
-//        for (PaymentBookInfoDto paymentBookInfoDto : bookDtoList) {
-//            totalMileage += paymentBookInfoDto.getMileage();
-//        }
-//        return totalMileage;
-//    }
-//    @GetMapping("/payment/virtual")
-//    public String payWithVirtualAccount(@AuthenticationPrincipal CustomUserDetails userDetails, HttpServletRequest request, HttpServletResponse response, Model model) {
-//        HttpSession session = request.getSession(false);
-//
-//        if (session == null) {
-//            return "redirect:/";
-//        }
-//
-//        long userId = userDetails.getUserId();
-//        List<PaymentBookInfoDto> bookDtoList = (List<PaymentBookInfoDto>)session.getAttribute(String.valueOf(userId)+"_1");
-//        PaymentAddressAndMileageInfo addressAndMileageInfo = (PaymentAddressAndMileageInfo) session.getAttribute(String.valueOf(userId) + "_2");
-//        String orderName = "";
-//
-//        for (PaymentBookInfoDto book : bookDtoList) {
-//            orderName += (book.getBookName() + " (" + book.getQuantity() + "권)\n");
-//        }
-//        orderName = orderName.substring(0, orderName.length()-1);
-//        int totalPrice = getTotalPrice(bookDtoList);
-//        int deliveryCharge = totalPrice >= 20000 ? 0 : 3000;
-//        model.addAttribute("totalPrice", totalPrice-addressAndMileageInfo.getUsedMileage() + deliveryCharge);
-//        model.addAttribute("orderName", orderName);
-//        model.addAttribute("clientKey", widgetClientKey);
-//
-//        return "payment/pay_virtual";
-//    }
 
     @GetMapping("/payment/card")
     public String payWithCreditCard(@AuthenticationPrincipal CustomUserDetails userDetails, HttpServletRequest request, HttpServletResponse response, Model model) {
@@ -110,13 +82,6 @@ public class PaymentController {
         return "payment/pay_card";
     }
 
-//    @PostMapping("/payment/virtual")
-//    public ResponseEntity<String> payWithVirtualAccountPost(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody PaymentAddressAndMileageInfo addressAndMileageInfo, HttpServletRequest req, Model model) {
-//        HttpSession session = req.getSession(true);
-//        long userId = userDetails.getUserId();
-//        session.setAttribute(String.valueOf(userId)+"_2", addressAndMileageInfo);
-//        return ResponseEntity.ok("/payment/virtual");
-//    }
     @PostMapping("/payment/card")
     public ResponseEntity<String> payWithCreditCardPost(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody PaymentAddressAndMileageInfo addressAndMileageInfo, HttpServletRequest req, Model model) {
         HttpSession session = req.getSession(true);
@@ -132,7 +97,7 @@ public class PaymentController {
         List<PaymentBookInfoDto> bookDtoList = (List<PaymentBookInfoDto>)session.getAttribute(String.valueOf(userId)+"_1");
         PaymentAddressAndMileageInfo addressAndMileageInfo = (PaymentAddressAndMileageInfo) session.getAttribute(String.valueOf(userId) + "_2");
 
-        int totalPrice = PaymentController.getTotalPrice(bookDtoList);
+        int totalPrice = getTotalPrice(bookDtoList);
         model.addAttribute("bookDtoList", bookDtoList);
         model.addAttribute("usedMileage", addressAndMileageInfo.getUsedMileage());
         model.addAttribute("totalPrice", totalPrice);
@@ -223,7 +188,7 @@ public class PaymentController {
         HttpSession session = req.getSession(false);
         List<PaymentBookInfoDto> bookDtoList = (List<PaymentBookInfoDto>)session.getAttribute(userDetails.getUserId()+"_1");
 
-        model.addAttribute("totalPrice", PaymentController.getTotalPrice(bookDtoList)); // 모델에 totalPrice를 추가하여 뷰로 전달
+        model.addAttribute("totalPrice", getTotalPrice(bookDtoList)); // 모델에 totalPrice를 추가하여 뷰로 전달
         model.addAttribute("mileage",userDetails.getMileage()); // 모델에 totalPrice를 추가하여 뷰로 전달
         model.addAttribute("cartBooks", bookDtoList);
 
@@ -235,6 +200,17 @@ public class PaymentController {
         HttpSession session = request.getSession(true);
         session.setAttribute(String.valueOf(userDetails.getUserId())+"_1", books);
         return ResponseEntity.ok("/payment/info");
+    }
+
+    @ResponseBody
+    @GetMapping("/payment/stock/{bookId}")
+    public PaymentValidInfoDto stockInfo(@PathVariable Long bookId) throws Exception {
+
+        Optional<Book> byId = bookRepository.findById(bookId);
+        Book book = byId.get();
+        PaymentValidInfoDto build = PaymentValidInfoDto.builder().stock(book.getStock()).build();
+        return build;
+
     }
 
 
@@ -250,12 +226,8 @@ public class PaymentController {
 
         session.removeAttribute(userId+"_1");
         session.removeAttribute(userId+"_2");
+
         return ResponseEntity.ok("");
     }
 
-    @PostMapping("/payment/webhook")
-    public String webhook() {
-        System.out.println("webhook");
-        return "redirect:/";
-    }
 }

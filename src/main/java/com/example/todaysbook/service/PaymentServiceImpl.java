@@ -33,11 +33,12 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void createOrder(long userId, List<PaymentBookInfoDto> bookDtoList, PaymentAddressAndMileageInfo addressAndMileageInfo) {
 
+
         Delivery delivery = deliveryRepository.save(Delivery.builder().id(generateDeliveryId(addressAndMileageInfo.getPostcode(), orderRepository.count() + 1))
                 .status("배송 준비중").address(addressAndMileageInfo.getAddress() + "," + addressAndMileageInfo.getDetailAddress())
                 .zipcode(addressAndMileageInfo.getPostcode()).build());
-
-        Orders order = orderRepository.save(Orders.builder().userId(userId).status("완료").deliveryId(delivery.getId()).build());
+        Orders od = Orders.builder().userId(userId).status("완료").deliveryId(delivery.getId()).build();
+        Orders order = orderRepository.save(od);
 
         AtomicLong plusMileage = new AtomicLong();
         bookDtoList.forEach(paymentBookInfoDto -> {
@@ -58,7 +59,6 @@ public class PaymentServiceImpl implements PaymentService {
     public void subtractStock(List<PaymentBookInfoDto> books) {
 
         for(PaymentBookInfoDto book : books) {
-
             bookMapper.updateStockOfBook(book.getBookId(), book.getQuantity());
         }
     }

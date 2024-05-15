@@ -18,26 +18,26 @@
                 <ul>
                     <li>
                         <p class="label" th:text="'닉네임'"></p>
-                        <input class="input">
+                        <input class="input" th:value="${user.nickName}">
                         <button class="button" th:text="'중복 확인'"></button>
                     </li>
                     <li>
                         <p class="label" th:text="'주소'"></p>
-                        <input class="input" id="address">
+                        <input class="input" id="address" th:value="${user.address.split(',')[0]}">
                         <input class="button" type="button" onclick="execDaumPostcode()" value="검색">
                     </li>
                     <li>
                         <p class="label" th:text="'상세주소'"></p>
-                        <input class="input" id="detailAddress">
+                        <input class="input" id="detailAddress"
+                               th:value="${user.address.split(',')[1].trim()}">
                     </li>
                     <li>
                         <p class="label" th:text="'우편번호'"></p>
-                        <input class="input" id="postcode">
+                        <input class="input" id="postcode" th:value="${user.zipcode}">
                     </li>
                 </ul>
                 <div class="button-group">
                     <button class="submit button" th:text="'수정 하기'"></button>
-                    <button class="cancel button" th:text="'취소'"></button>
                 </div>
             </form>
         </section>
