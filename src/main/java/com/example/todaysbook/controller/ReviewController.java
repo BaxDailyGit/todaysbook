@@ -66,8 +66,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/delete")
-    public String deleteReview(@RequestParam(value = "reviewId") long reviewId,
-                               @RequestParam(value = "bookId") long bookId,
+    public String deleteReview(@RequestBody ReviewRequestDto requestDto,
                                @AuthenticationPrincipal CustomUserDetails userDetails,
                                Model model, BindingResult result) {
 
@@ -76,15 +75,15 @@ public class ReviewController {
 
         Map<String, Long> map = new HashMap<>();
         map.put("userId", userId);
-        map.put("reviewOwnerId", reviewService.getReviewOwnerId(reviewId));
+        map.put("reviewOwnerId", reviewService.getReviewOwnerId(requestDto.getReviewId()));
 
         ReviewUpdateDeleteValidator validator = new ReviewUpdateDeleteValidator();
         validator.validate(map, result);
 
-        reviewService.deleteReview(reviewId);
+        reviewService.deleteReview(requestDto.getReviewId());
 
         List<Review> reviews =
-                reviewService.getReviews(bookId, userId, orderBy);
+                reviewService.getReviews(requestDto.getBookId(), userId, orderBy);
         model.addAttribute("reviews", reviews);
         model.addAttribute("userId", userId);
 
@@ -101,7 +100,7 @@ public class ReviewController {
 
         Map<String, Long> map = new HashMap<>();
         map.put("userId", userId);
-        map.put("reviewOwnerId", requestDto.getReviewId());
+        map.put("reviewOwnerId", reviewService.getReviewOwnerId(requestDto.getReviewId()));
 
         ReviewUpdateDeleteValidator validator = new ReviewUpdateDeleteValidator();
         validator.validate(map, result);

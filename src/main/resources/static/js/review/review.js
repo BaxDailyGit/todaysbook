@@ -146,10 +146,11 @@ function deleteReview(button) {
     $.ajax({
         url: url,
         type: method,
-        data: {
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify({
             bookId: bookId,
             reviewId: reviewId
-        },
+        }),
         success: function (data) {
             alert("리뷰가 삭제 되었습니다.");
             $('.review-area').html(data);
