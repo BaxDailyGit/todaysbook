@@ -218,6 +218,7 @@ public class PaymentController {
         HttpSession session = req.getSession(false);
         List<PaymentBookInfoDto> bookDtoList = (List<PaymentBookInfoDto>) session.getAttribute(userId + "_1");
 
+
         model.addAttribute("totalPrice", getTotalPrice(bookDtoList)); // 모델에 totalPrice를 추가하여 뷰로 전달
         model.addAttribute("mileage", userDetails.getMileage()); // 모델에 totalPrice를 추가하여 뷰로 전달
         model.addAttribute("cartBooks", bookDtoList);
@@ -232,6 +233,14 @@ public class PaymentController {
 
         if (userId == 0) {
             throw new NotLoggedInException();
+        }
+
+        // 예외처리 추가
+        long totalPriceLong = books.stream().mapToLong(book -> book.getPrice() * book.getQuantity()).sum();
+        int totalPrice = (int) totalPriceLong;
+
+        if (totalPrice == 0) {
+            return ResponseEntity.badRequest().body("상품을 담아주세요.");
         }
 
         session.setAttribute(userId + "_1", books);
