@@ -4,7 +4,7 @@ import com.example.todaysbook.constant.Constant;
 import com.example.todaysbook.domain.dto.ReviewRequestDto;
 import com.example.todaysbook.exception.review.ContentEmptyException;
 import com.example.todaysbook.exception.review.ContentLengthOverException;
-import com.example.todaysbook.exception.review.UnauthorizedUserException;
+import com.example.todaysbook.exception.UnauthorizedUserException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 

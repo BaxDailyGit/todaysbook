@@ -1,6 +1,6 @@
 function deleteSelectedCartItems() {
-    var unselectedItems = document.querySelectorAll('.cart-list-body input[type="checkbox"]:not(:checked)');
-    var unselectedIds = [];
+    let unselectedItems = document.querySelectorAll('.cart-list-body input[type="checkbox"]:not(:checked)');
+    let unselectedIds = [];
     unselectedItems.forEach(function (item) {
         unselectedIds.push(item.value);
     });
@@ -80,9 +80,12 @@ function postSelectedCartItems() {
         },
         body: JSON.stringify(selectedBooks)
     })
-        .then(response => response.text()) // 서버로부터의 응답 body를 텍스트로 읽어옴
+        .then(response =>
+                response.text()) // 서버로부터의 응답 body를 텍스트로 읽어옴
         .then(data => {
-            window.location.href = data; // 페이지를 리다이렉트할 URL로 이동
+            if (data) {
+                window.location.href = data; // 페이지를 리다이렉트할 URL로 이동
+            }
         })
         .catch(error => {
             // 오류가 발생한 경우 처리합니다.
@@ -106,7 +109,7 @@ function checkStock(bookId, bookName, quantity) {
             let stock = data.stock;
 
             if (stock == 0) {
-                alert(bookName+' 품절 상태 입니다');
+                alert(bookName + ' 품절 상태 입니다');
                 location.href = url;
             }
             if (quantity == 0) {
@@ -114,7 +117,7 @@ function checkStock(bookId, bookName, quantity) {
                 location.href = url;
             }
             if (quantity > stock) {
-                alert(bookName+ '\n현재 남아 있는 재고는 ' + stock + '개 입니다.\n'
+                alert(bookName + '\n현재 남아 있는 재고는 ' + stock + '개 입니다.\n'
                     + '책을 구매하시려면 ' + (quantity - stock) + '개 줄여 주세요');
 
                 location.href = url;
@@ -122,7 +125,7 @@ function checkStock(bookId, bookName, quantity) {
 
         })
         .catch(error => {
-            console.error("서버 요청 중 에러 발생:", error);
+            console.error(error);
         });
 }
 
@@ -130,7 +133,7 @@ function checkStock(bookId, bookName, quantity) {
 
 // 페이지 로딩 시 전체 상품 선택 및 총 주문 금액 초기화
 document.addEventListener("DOMContentLoaded", function () {
-    var allCheckBox = document.querySelectorAll('.cart-list-body input[type="checkbox"]');
+    let allCheckBox = document.querySelectorAll('.cart-list-body input[type="checkbox"]');
     allCheckBox.forEach(function (item) {
         item.checked = true; // 모든 체크박스 선택
     });
@@ -142,13 +145,13 @@ function formatNumber(number) {
 }
 
 function updateTotalPrice() {
-    var totalPriceElement = document.querySelector('.cart-list-bottom p:first-child');
-    var totalPrice = 0;
+    let totalPriceElement = document.querySelector('.cart-list-bottom p:first-child');
+    let totalPrice = 0;
 
     // 체크된 상품의 가격을 합산하여 총 주문 금액 계산
     document.querySelectorAll('.cart-list-body input[type="checkbox"]:checked').forEach(function (item) {
-        var cartItem = item.parentElement.parentElement; // 각 상품 리스트 아이템
-        var itemPrice = parseInt(cartItem.querySelector('.price').textContent.replace(/[,원]/g, '')); // 상품 가격
+        let cartItem = item.parentElement.parentElement; // 각 상품 리스트 아이템
+        let itemPrice = parseInt(cartItem.querySelector('.price').textContent.replace(/[,원]/g, '')); // 상품 가격
         totalPrice += itemPrice;
     });
 
@@ -156,7 +159,7 @@ function updateTotalPrice() {
     totalPriceElement.innerText = '총 주문 금액 ' + totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '원';
 
     // 총 주문 금액에 따른 배송료 업데이트
-    var deliveryFeeElement = document.getElementById("deliveryFee");
+    let deliveryFeeElement = document.getElementById("deliveryFee");
     if (totalPrice >= 20000) {
         deliveryFeeElement.textContent = "무료";
     } else {
@@ -168,11 +171,11 @@ function updateTotalPrice() {
 }
 
 function updateTotalMileage(totalPrice) {
-    var totalMileageElement = document.getElementById("totalMileage");
-    var membershipLevel = document.getElementById("membershipLevel").innerText.trim();
+    let totalMileageElement = document.getElementById("totalMileage");
+    let membershipLevel = document.getElementById("membershipLevel").innerText.trim();
 
     // 등급에 따른 마일리지 비율 계산
-    var mileageRate;
+    let mileageRate;
     switch (membershipLevel) {
         case 'BRONZE':
             mileageRate = 0.03;
@@ -192,7 +195,7 @@ function updateTotalMileage(totalPrice) {
     }
 
     // 총 마일리지 계산
-    var totalMileage = totalPrice * mileageRate;
+    let totalMileage = totalPrice * mileageRate;
 
     // 총 마일리지를 화면에 업데이트
     totalMileageElement.innerText = '총 적립 마일리지 ' + totalMileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + 'M';
@@ -201,15 +204,15 @@ function updateTotalMileage(totalPrice) {
 
 document.querySelectorAll('.cart-list-body input[type="checkbox"]').forEach(function (checkbox) {
     checkbox.addEventListener('change', function () {
-        var totalPrice = updateTotalPrice(); // 총 주문 금액 업데이트 및 반환
+        let totalPrice = updateTotalPrice(); // 총 주문 금액 업데이트 및 반환
         updateTotalMileage(totalPrice); // 총 마일리지 업데이트
     });
 });
 
 
 function deleteSelectedCartItemsIfNotChecked() {
-    var selectedItems = document.querySelectorAll('.cart-list-body input[type="checkbox"]:checked');
-    var allItems = document.querySelectorAll('.cart-list-body input[type="checkbox"]');
+    let selectedItems = document.querySelectorAll('.cart-list-body input[type="checkbox"]:checked');
+    let allItems = document.querySelectorAll('.cart-list-body input[type="checkbox"]');
 
     if (selectedItems.length !== allItems.length) {
         if (confirm('선택되지 않은 품목은 삭제해주세요.')) {

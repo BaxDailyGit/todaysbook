@@ -22,11 +22,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     function sendMessage() {
         const content = userInput.value.trim();
-        const welcomeText = document.getElementById('welcome-text');
-        if (welcomeText) {
-            welcomeText.style.display = 'none';
-        }
         if (content !== '') {
+            const welcomeText = document.getElementById('welcome-text');
+            if (welcomeText) {
+                welcomeText.style.display = 'none';
+            }
             appendMessage('User', content);
             userInput.value = '';
             if (eventSource) {

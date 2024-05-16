@@ -9,6 +9,7 @@ import com.example.todaysbook.exception.admin.PublisherLengthOverException;
 import com.example.todaysbook.exception.book.DuplicateBookException;
 import com.example.todaysbook.exception.bookMark.AlreadyBookmarkedException;
 import com.example.todaysbook.exception.bookMark.NotBookmarkedYetException;
+import com.example.todaysbook.exception.cart.InvalidQuantityException;
 import com.example.todaysbook.exception.delivery.DeliveryNotFoundException;
 import com.example.todaysbook.exception.order.OrderNotFoundException;
 import com.example.todaysbook.exception.recommendList.BookNotFoundException;
@@ -18,7 +19,6 @@ import com.example.todaysbook.exception.recommendList.RecommendListNotFoundExcep
 import com.example.todaysbook.exception.recommendList.TitleLengthOverException;
 import com.example.todaysbook.exception.review.ContentEmptyException;
 import com.example.todaysbook.exception.review.ContentLengthOverException;
-import com.example.todaysbook.exception.review.UnauthorizedUserException;
 import com.example.todaysbook.exception.user.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -190,6 +190,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ContentLengthOverException.class)
     public ResponseEntity<String> ReviewContentLengthOverException(ContentLengthOverException ex) {
         return new ResponseEntity<>("리뷰 내용의 길이가 초과되었습니다.", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidQuantityException.class)
+    public ResponseEntity<String> CartCountException(InvalidQuantityException ex) {
+        return new ResponseEntity<>("장바구니에 담을 수 있는 최소 수량은 1입니다.", HttpStatus.BAD_REQUEST);
     }
 
     //배송 관련 예외처리

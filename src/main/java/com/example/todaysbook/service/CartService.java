@@ -42,17 +42,11 @@ public class CartService {
         //0503수정
         long userId = userDetails.getUserId();
         requestDto.setUserId(userId);
-        // 로그 추가
-        System.out.println("Adding book to cart...");
-
         // 장바구니에 담을 책 엔티티 조회
         Book book = bookRepository.findById(requestDto.getBookId())
                 .orElseThrow(EntityNotFoundException::new);
         //userId를 통해 사용자를 조회
         User user = userRepository.findById(requestDto.getUserId());
-
-        // 로그 추가
-        System.out.println("Book retrieved: " + book.getTitle());
 
         // 장바구니 조회
         Cart cart = cartRepository.findByUserId(user.getId());
@@ -70,15 +64,13 @@ public class CartService {
         if (savedCartBook != null) {
             savedCartBook.addCount(requestDto.getCount());
             cartBookRepository.save(savedCartBook);
-            // 로그 추가
-            System.out.println("Book quantity updated in cart.");
+
             return savedCartBook.getId();
         } else {
             // 장바구니에 새로운 도서 추가
             CartBook cartBook = CartBook.createCartBook(cart, book, requestDto.getCount());
             cartBookRepository.save(cartBook);
-            // 로그 추가
-            System.out.println("New book added to cart.");
+
             return cartBook.getId();
         }
     }

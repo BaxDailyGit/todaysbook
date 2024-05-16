@@ -1,4 +1,4 @@
-package com.example.todaysbook.exception.review;
+package com.example.todaysbook.exception;
 
 public class UnauthorizedUserException extends RuntimeException{
 }

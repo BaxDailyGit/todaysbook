@@ -1,6 +1,6 @@
 package com.example.todaysbook.validate;
 
-import com.example.todaysbook.exception.review.UnauthorizedUserException;
+import com.example.todaysbook.exception.UnauthorizedUserException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -23,7 +23,7 @@ public class ReviewUpdateDeleteValidator implements Validator {
         }
     }
 
-    boolean isNotReviewOwner(Long userId, Long reviewOwnerId) {
+    private boolean isNotReviewOwner(Long userId, Long reviewOwnerId) {
 
         return userId != reviewOwnerId;
     }

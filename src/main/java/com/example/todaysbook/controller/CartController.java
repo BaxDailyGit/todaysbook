@@ -9,6 +9,8 @@ import com.example.todaysbook.domain.entity.Cart;
 import com.example.todaysbook.domain.entity.CartBook;
 import com.example.todaysbook.domain.entity.Role;
 import com.example.todaysbook.service.CartService;
+import com.example.todaysbook.util.UserChecker;
+import com.example.todaysbook.validate.CartValidator;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -44,7 +47,6 @@ public class CartController {
 
         Role userRole = Role.valueOf(userDetails.getAuthorities().iterator().next().getAuthority());
 
-
         // 총 주문 금액 및 적립 마일리지 계산
         int totalPrice = cartService.calculateTotalPrice(cartBooks);
         int totalMileage = cartService.calculateTotalMileage(cartBooks, userRole);
@@ -61,19 +63,17 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Long> addToCart(@RequestBody CartRequestDto requestDto,@AuthenticationPrincipal CustomUserDetails userDetails) {
-        // userId로 수정실험
-        //0503수정
-        long userId = userDetails.getUserId();
+    public ResponseEntity<?> addToCart(@RequestBody CartRequestDto requestDto, BindingResult result,
+                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        long userId = UserChecker.getUserId(userDetails);
         requestDto.setUserId(userId);
 
-        try {
-            long cartBookId = cartService.addToCart(requestDto,userDetails);
-            return ResponseEntity.ok(cartBookId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        CartValidator validator = new CartValidator();
+        validator.validate(requestDto, result);
+
+        long cartBookId = cartService.addToCart(requestDto, userDetails);
+        return ResponseEntity.ok(cartBookId);
     }
 
     // 서버 측 컨트롤러

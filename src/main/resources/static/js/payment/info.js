@@ -7,6 +7,8 @@ function postAddressAndMileageInfo() {
     var usedMileage = document.querySelector('.mileage-input').value.replace(/,/g, '');
     var totalPrice = document.getElementById("totalPriceDisplay").value.replace(/,/g, '').replace('원', '');
 
+
+
     // JSON 형식으로 데이터를 구성
     var dataToSend = {
         user: user,
@@ -24,12 +26,16 @@ function postAddressAndMileageInfo() {
             },
             body: JSON.stringify(dataToSend)
         })
-        .then(response => response.text()) // 서버로부터의 응답 body를 텍스트로 읽어옴
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text) });
+            }
+            return response.text();
+        })
         .then(data => {
-          window.location.href = data; // 페이지를 리다이렉트할 URL로 이동
+            window.location.href = data; // 페이지를 리다이렉트할 URL로 이동
         })
         .catch(error => {
-            // 오류가 발생한 경우 처리합니다.
-            console.error('Error sending selected books to server:', error);
+            alert(error.message); // 오류 메시지를 경고창으로 표시
         });
 }
