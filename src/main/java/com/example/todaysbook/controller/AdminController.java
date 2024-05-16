@@ -315,6 +315,7 @@ public class AdminController {
         model.addAttribute("dto", result);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+        model.addAttribute("keyword", keyword);
 
         return "admin/sales-book";
     }
