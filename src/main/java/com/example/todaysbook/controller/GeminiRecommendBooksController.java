@@ -21,8 +21,8 @@ public class GeminiRecommendBooksController {
     private final GeminiApiService geminiApiService;
     private final GeminiRecommendBookService geminiRecommendBookService;
 
-    // 하루에 한번 자동으로 책을 추천
-    @Scheduled(cron = "${scheduler.cron.expression}")
+    // 하루에 한번 자동으로 책을 추천 - 매일 밤 0시에 01분에 실행 (초,분,시,일,월,요일,년도)
+    @Scheduled(cron = "0 1 0 * * *")
     @GetMapping("/ApiCall")
     public ResponseEntity<String> AutomaticallyGeminiApi() {
         try {
