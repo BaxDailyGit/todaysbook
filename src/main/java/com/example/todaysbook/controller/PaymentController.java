@@ -86,7 +86,8 @@ public class PaymentController {
     }
 
     @PostMapping("/payment/card")
-    public ResponseEntity<String> payWithCreditCardPost(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody PaymentAddressAndMileageInfo addressAndMileageInfo, HttpServletRequest req, Model model) {
+    public ResponseEntity<String> payWithCreditCardPost(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                        @RequestBody PaymentAddressAndMileageInfo addressAndMileageInfo, HttpServletRequest req, Model model) {
 
         //이부분 예외
         if (addressAndMileageInfo.getUser() == null || addressAndMileageInfo.getUser().isEmpty()) {
@@ -101,6 +102,11 @@ public class PaymentController {
         if (addressAndMileageInfo.getDetailAddress() == null || addressAndMileageInfo.getDetailAddress().isEmpty()) {
             return ResponseEntity.badRequest().body("상세주소를 입력해 주세요.");
         }
+
+        if (addressAndMileageInfo.getUsedMileage() < 0) {
+            return ResponseEntity.badRequest().body("유효한 사용 마일리지가 아닙니다.");
+        }
+
         HttpSession session = req.getSession(true);
         long userId = userDetails.getUserId();
         session.setAttribute(String.valueOf(userId) + "_2", addressAndMileageInfo);

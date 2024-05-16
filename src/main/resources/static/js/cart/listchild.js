@@ -242,6 +242,12 @@ function handleMileageInput() {
 // 마일리지 입력란에 이벤트 리스너를 추가
 let mileageInput = document.getElementById("mileage-input");
 mileageInput.addEventListener('input', handleMileageInput);
+mileageInput.addEventListener("keydown", function (event){
+
+    if(event.key === "-") {
+        event.preventDefault();
+    }
+});
 
 // 전액 사용 체크박스의 상태에 따라 처리하는 함수
 function handleUseAllMileageCheckbox() {

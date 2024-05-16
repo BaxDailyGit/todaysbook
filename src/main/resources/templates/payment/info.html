@@ -7,7 +7,6 @@
 <th:block layout:fragment="head">
     <title>결제 하기</title>
     <link href="../../static/css/payment/info.css" th:href="@{/css/payment/info.css}" rel="stylesheet"/>
-<!--    <link th:href="@{/css/cart/list.css}" rel="stylesheet"/>-->
 </th:block>
 <div th:replace="~{fragments/header.html}"></div>
 <main th:fragment="content">
@@ -21,12 +20,6 @@
         </div>
         <section class="receiver-info">
             <ul>
-<!--                <li th:each="label : ${#strings.arraySplit('받으시는 분,주소,우편 번호,연락처',',')}">-->
-<!--                    <p class="label" th:text="${label}"></p>-->
-<!--                    <input class="input">-->
-<!--                    <button class="button"-->
-<!--                            th:if="${label == '주소'}" th:text="'검색'"></button>-->
-<!--                </li>-->
                 <li>
                     <p class="label">받으시는 분</p>
                     <input class="input" type="text" id="user">
