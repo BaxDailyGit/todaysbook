@@ -48,8 +48,8 @@ public class GeminiRecommendBookServiceImpl implements GeminiRecommendBookServic
                 saveGeminiRecommendBookEntity(bookId);
 
             } else {
-                // DB에 책이 없으면 외부 API에서 데이터 가져와서 저장
-                log.info(bookTitle + ":  title로 검색해본 결과 Book에 없습니다. 외부 API에서 검색후 isbn을 가져와 다시 검색합니다.");
+                // DB에 책이 없으면 알라딘 API에서 데이터 가져와서 저장
+                log.info(bookTitle + ":  title로 검색해본 결과 Book에 없습니다. 알라딘 API에서 검색후 isbn을 가져와 다시 검색합니다.");
 
                 try {
                     HashMap<String, ?> response = aladinApi.getNewBook(bookTitle, 1, 1);
@@ -72,7 +72,7 @@ public class GeminiRecommendBookServiceImpl implements GeminiRecommendBookServic
                             saveGeminiRecommendBookEntity(bookId);
                         }
                     } else {
-                        log.info(bookTitle + ":  isbn으로 검색해본 결과 외부 API에서도 없습니다. 다음 책으로 넘어갑니다.\n");
+                        log.info(bookTitle + ":  title로 검색해본 결과 알라딘 API에 없습니다. 다음 책으로 넘어갑니다.\n");
                     }
                 } catch (Exception e) {
                     log.error("책를 처리하는 중에 오류가 발생했습니다. bookTitle: " + bookTitle, e);
