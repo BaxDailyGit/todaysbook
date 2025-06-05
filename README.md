@@ -119,7 +119,7 @@ Alan 챗봇 동적 채팅 UI<br></td>
 
 ### [기술 - DB]
 
-<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src="https://img.shields.io/badge/Amazon RDS-527FFF?style=for-the-badge&logo=Amazon RDS&logoColor=white">
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"> <img src="https://img.shields.io/badge/Amazon RDS-527FFF?style=for-the-badge&logo=Amazon-RDS&logoColor=white">
 
 ### [기술 - Data Analysis]
 <img src="https://img.shields.io/badge/mahout-ECD53F?style=for-the-badge&logo=apachehadoop&logoColor=white">
@@ -130,7 +130,7 @@ Alan 챗봇 동적 채팅 UI<br></td>
 
 ### [개발 - DEPLOY]
 
-<img src="https://img.shields.io/badge/Amazon EC2-FF9900?style=for-the-badge&logo=Amazon EC2&logoColor=white">  <img src="https://img.shields.io/badge/amazon s3-569A31?style=for-the-badge&logo=amazons3&logoColor=white">  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=GitHub&logoColor=white">
+<img src="https://img.shields.io/badge/Amazon-EC2-FF9900?style=for-the-badge&logo=Amazon-EC2&logoColor=white"><img src="https://img.shields.io/badge/amazon-s3-569A31?style=for-the-badge&logo=amazons3&logoColor=white">  <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=GitHub&logoColor=white">
 
 ### [협업 도구]
 
